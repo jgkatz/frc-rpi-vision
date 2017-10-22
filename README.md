@@ -15,3 +15,7 @@ git clone https://github.com/jgkatz/frc-rpi-vision.git
 ```
 
 I originally set up this project by pulling in the vision sample code from FRC
+at https://github.com/wpilibsuite/VisionBuildSamples.git, then configured
+build.gradle for arm-raspbian and main.java for a usb camera.
+
+2.
