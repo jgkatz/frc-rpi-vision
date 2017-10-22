@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.tables.*;
 import edu.wpi.cscore.*;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
+import gripvision.GripPipeline;
 
 public class Main {
   public static void main(String[] args) {
@@ -12,11 +13,11 @@ public class Main {
     System.loadLibrary("opencv_java310");
 
     // Connect NetworkTables, and get access to the publishing table
-    NetworkTable.setClientMode();
-    // Set your team number here
-    NetworkTable.setTeam(9999);
+    // NetworkTable.setClientMode();
+    // // Set your team number here
+    // NetworkTable.setTeam(9999);
 
-    NetworkTable.initialize();
+    // NetworkTable.initialize();
 
 
     // This is the network port you want to stream the raw received image to
@@ -53,6 +54,8 @@ public class Main {
     Mat inputImage = new Mat();
     Mat hsv = new Mat();
 
+    GripPipeline pipeline = new GripPipeline();
+
     // Infinitely process image
     while (true) {
       // Grab a frame. If it has a frame time of 0, there was an error.
@@ -60,14 +63,11 @@ public class Main {
       long frameTime = imageSink.grabFrame(inputImage);
       if (frameTime == 0) continue;
 
-      // Below is where you would do your OpenCV operations on the provided image
-      // The sample below just changes color source to HSV
-      Imgproc.cvtColor(inputImage, hsv, Imgproc.COLOR_BGR2HSV);
+      // Here we run the processing pipeline
+      pipeline.process(inputImage);
 
-      // Here is where you would write a processed image that you want to restreams
-      // This will most likely be a marked up image of what the camera sees
-      // For now, we are just going to stream the HSV image
-      imageSource.putFrame(hsv);
+      // Here we write the output of the pipeline to the jpeg server
+      imageSource.putFrame(pipeline.hsvThresholdOutput());
     }
   }
 
